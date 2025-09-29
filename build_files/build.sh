@@ -10,7 +10,7 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux 
+dnf5 install -y tmux jq cockipit
 
 # Use a COPR Example:
 #
@@ -33,3 +33,19 @@ systemctl --user enable podman-restart.service
 # Check that it's running
 systemctl --user list-unit-files | grep podman
 
+# switch this to eap if you require the early access version
+RELEASE_TYPE=release
+TOOLBOX_BIN_DIR=${HOME}/.local/share/JetBrains/Toolbox/bin
+
+# if you have an existing install you should consider removing this directory first
+install -d ${TOOLBOX_BIN_DIR}
+
+curl -sL \
+    $(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=${RELEASE_TYPE}' \
+        | jq -r '.TBA[0].downloads.linux.link') \
+    | tar xzvf - \
+        --directory="${TOOLBOX_BIN_DIR}" \
+        --strip-components=2
+
+# make the script available from the terminal
+ln -sf ${TOOLBOX_BIN_DIR}/jetbrains-toolbox ${HOME}/.local/bin/jetbrains-toolbox
