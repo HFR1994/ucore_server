@@ -21,17 +21,9 @@ dnf5 install -y tmux jq cockpit
 
 #### Example for enabling a System Unit File
 
-# Copy the system's podman-restart service to the user location
-mkdir -p /var/home/core/.config/systemd/user
-cp /lib/systemd/system/podman-restart.service /var/home/core/.config/systemd/user
-
 # Enable the user service
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
-systemctl --user enable podman-restart.service
-
-# Check that it's running
-systemctl --user list-unit-files | grep podman
 
 # switch this to eap if you require the early access version
 RELEASE_TYPE=release
