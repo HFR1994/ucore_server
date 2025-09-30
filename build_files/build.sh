@@ -30,7 +30,7 @@ RELEASE_TYPE=release
 TOOLBOX_BIN_DIR=${HOME}/.local/share/JetBrains/Toolbox/bin
 
 # if you have an existing install you should consider removing this directory first
-install -d ${TOOLBOX_BIN_DIR}
+install -d -p ${TOOLBOX_BIN_DIR}
 
 curl -sL \
     $(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=${RELEASE_TYPE}' \
