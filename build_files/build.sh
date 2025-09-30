@@ -27,7 +27,7 @@ systemctl enable netavark-firewalld-reload.service
 
 # switch this to eap if you require the early access version
 RELEASE_TYPE=release
-TOOLBOX_BIN_DIR=${HOME}/.local/share/JetBrains/Toolbox/bin
+TOOLBOX_BIN_DIR=/usr/local/jetbrains/bin
 
 # if you have an existing install you should consider removing this directory first
 mkdir -p ${TOOLBOX_BIN_DIR}
