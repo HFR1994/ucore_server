@@ -43,8 +43,8 @@ curl -sL \
 
 
 
-IDE_LIST=("PCP" "WS" "IIU" "CL")
-IDE_BACKEND_LIST=("PY" "WS" "IU" "CL")
+IDE_LIST=("PCP" "WS" "IIU" "CL", "GW")
+IDE_BACKEND_LIST=("PY" "WS" "IU" "CL", "GW")
 
 for i in "${!IDE_LIST[@]}"; do
     BUILD_NUM=$(curl -s "https://data.services.jetbrains.com/products/releases?code=${IDE_LIST[i]}&latest=true&type=${RELEASE_TYPE}" | jq -r ".${IDE_LIST[i]}[0].build");
