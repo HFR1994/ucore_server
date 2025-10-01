@@ -52,5 +52,5 @@ for i in "${!IDE_LIST[@]}"; do
     "${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader/bin/jetbrains-clients-downloader" --products-filter "${IDE_BACKEND_LIST[i]}" --platforms-filter linux-x64 --build-filter "${BUILD_NUM}" --download-backends "${JETBRAINS_BIN_DIR}";
     tar -xvzf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz -C "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}";
     rm -rf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz;
-    "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*/bin/remote-dev-server.sh registerBackendLocationForGateway;
+    "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true;
 done;
