@@ -10,7 +10,7 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux jq cockpit
+dnf5 install -y tmux jq cockpit wget curl gzip
 
 # Use a COPR Example:
 #
@@ -26,19 +26,31 @@ systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
 # switch this to eap if you require the early access version
-RELEASE_TYPE=release
-TOOLBOX_BIN_DIR=${HOME}/.local/share/JetBrains/Toolbox/bin
+export RELEASE_TYPE=release
+export JETBRAINS_BIN_DIR=/opt/jetbrains
 
 # if you have an existing install you should consider removing this directory first
+mkdir -p /var/opt
 mkdir -p /var/roothome
-install -d ${TOOLBOX_BIN_DIR}
+install -d ${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader
 
 curl -sL \
-    $(curl -s 'https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=${RELEASE_TYPE}' \
-        | jq -r '.TBA[0].downloads.linux.link') \
-    | tar xzvf - \
-        --directory="${TOOLBOX_BIN_DIR}" \
-        --strip-components=2
+        $(curl -s "https://data.services.jetbrains.com/products?code=JCD&release.type=release&fields=distributions%2Clink%2Cname%2Creleases" \
+            | jq -r '.[0].releases[0].downloads.["linux_x86-64"].link') \
+        | tar xzvf - \
+            --directory="${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader"  \
+            --strip-components=1
 
-# make the script available from the terminal
-ln -sf ${TOOLBOX_BIN_DIR}/jetbrains-toolbox ${HOME}/.local/bin/jetbrains-toolbox
+
+
+IDE_LIST=("PCP" "WS" "IIU" "CL")
+IDE_BACKEND_LIST=("PY" "WS" "IU" "CL")
+
+for i in "${!IDE_LIST[@]}"; do
+    BUILD_NUM=$(curl -s "https://data.services.jetbrains.com/products/releases?code=${IDE_LIST[i]}&latest=true&type=${RELEASE_TYPE}" | jq -r ".${IDE_LIST[i]}[0].build");
+    
+    "${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader/bin/jetbrains-clients-downloader" --products-filter "${IDE_BACKEND_LIST[i]}" --platforms-filter linux-x64 --build-filter "${BUILD_NUM}" --download-backends "${JETBRAINS_BIN_DIR}";
+    tar -xvzf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz -C "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}";
+    rm -rf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz;
+    "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*/bin/remote-dev-server.sh registerBackendLocationForGateway;
+done;
