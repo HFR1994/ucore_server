@@ -30,7 +30,7 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-OUTPUT_FILE="product.json"
+OUTPUT_FILE="products.json"
 JSON_DIR="/opt/jetbrains/backends"
 
 # Check if directory exists

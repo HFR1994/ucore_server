@@ -7,8 +7,8 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-IDE="WS"
-BACKEND="WS"
+IDE="$1"
+BACKEND="$2"
 
 # switch this to eap if you require the early access version
 export RELEASE_TYPE=release
@@ -46,6 +46,6 @@ tar -xvzf "${JETBRAINS_BIN_DIR}/backends/${BACKEND}"/*.tar.gz \
 # Remove tar.gz
 rm -rf "${JETBRAINS_BIN_DIR}/backends/${BACKEND}"/*.tar.gz
 
-mv "${JETBRAINS_BIN_DIR}/backends/product.json" "${JETBRAINS_BIN_DIR}/backends/${IDE}.json"
+mv "${JETBRAINS_BIN_DIR}/backends/products.json" "${JETBRAINS_BIN_DIR}/backends/${IDE}.json"
 
 echo "✅ Installed $IDE ($BACKEND)"
