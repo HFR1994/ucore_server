@@ -25,32 +25,24 @@ dnf5 install -y tmux jq cockpit wget curl gzip
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
-# switch this to eap if you require the early access version
-export RELEASE_TYPE=release
-export JETBRAINS_BIN_DIR=/opt/jetbrains
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <output_file> <json_directory>"
+    exit 1
+fi
 
-# if you have an existing install you should consider removing this directory first
-mkdir -p /var/opt
-mkdir -p /var/roothome
-install -d ${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader
+OUTPUT_FILE="product.json"
+JSON_DIR="/opt/jetbrains/backends"
 
-curl -sL \
-        $(curl -s "https://data.services.jetbrains.com/products?code=JCD&release.type=release&fields=distributions%2Clink%2Cname%2Creleases" \
-            | jq -r '.[0].releases[0].downloads.["linux_x86-64"].link') \
-        | tar xzvf - \
-            --directory="${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader"  \
-            --strip-components=1
+# Check if directory exists
+if [ ! -d "$JSON_DIR" ]; then
+    echo "Error: Directory '$JSON_DIR' does not exist"
+    exit 1
+fi
 
+# Find all JSON files in directory
+JSON_FILES=("$JSON_DIR"/*.json)
 
+# Merge all JSON files using jq
+jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
 
-IDE_LIST=("PCP" "WS" "IIU" "CL" "GW")
-IDE_BACKEND_LIST=("PY" "WS" "IU" "CL" "GW")
-
-for i in "${!IDE_LIST[@]}"; do
-    BUILD_NUM=$(curl -s "https://data.services.jetbrains.com/products/releases?code=${IDE_LIST[i]}&latest=true&type=${RELEASE_TYPE}" | jq -r ".${IDE_LIST[i]}[0].build");
-    
-    "${JETBRAINS_BIN_DIR}/jetbrains-clients-downloader/bin/jetbrains-clients-downloader" --products-filter "${IDE_BACKEND_LIST[i]}" --platforms-filter linux-x64 --build-filter "${BUILD_NUM}" --download-backends "${JETBRAINS_BIN_DIR}";
-    tar -xvzf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz -C "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}";
-    rm -rf "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*.tar.gz;
-    "${JETBRAINS_BIN_DIR}/backends/${IDE_BACKEND_LIST[i]}"/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true;
-done;
+"${JETBRAINS_BIN_DIR}/backends/*/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true;
