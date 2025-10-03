@@ -46,11 +46,11 @@ RUN chmod +x /tmp/jetbrains.sh \
 FROM base AS final
 
 # Copy installed IDEs from each stage
-COPY --from=webstorm /opt/jetbrains/backend /opt/jetbrains/backend
-COPY --from=idea /opt/jetbrains/backend /opt/jetbrains/backend
-COPY --from=pycharm /opt/jetbrains/backend /opt/jetbrains/backend
-COPY --from=clion /opt/jetbrains/backend /opt/jetbrains/backend
-COPY --from=gateway /opt/jetbrains/backend /opt/jetbrains/backend
+COPY --from=webstorm /opt/jetbrains/backends /opt/jetbrains/backends
+COPY --from=idea /opt/jetbrains/backends /opt/jetbrains/backends
+COPY --from=pycharm /opt/jetbrains/backends /opt/jetbrains/backends
+COPY --from=clion /opt/jetbrains/backends /opt/jetbrains/backends
+COPY --from=gateway /opt/jetbrains/backends /opt/jetbrains/backends
 
 # Copy build scripts to final stage if needed
 COPY --from=ctx / /ctx
