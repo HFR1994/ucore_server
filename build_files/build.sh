@@ -25,11 +25,6 @@ dnf5 install -y tmux jq cockpit wget curl gzip
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 <output_file> <json_directory>"
-    exit 1
-fi
-
 OUTPUT_FILE="products.json"
 JSON_DIR="/opt/jetbrains/backends"
 
