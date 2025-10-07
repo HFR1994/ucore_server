@@ -40,5 +40,11 @@ JSON_FILES=("$JSON_DIR"/*.json)
 # Merge all JSON files using jq
 jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
 
-# Register backends (ignore errors if the command fails)
-"${JSON_DIR}/"/*/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true
+find "$JSON_DIR" -type f -path "*/bin/remote-dev-server.sh" | while read -r SCRIPT_PATH; do
+  BACKEND_DIR=$(dirname "$(dirname "$SCRIPT_PATH")")
+  echo "📂 Found backend: $BACKEND_DIR"
+  echo "🚀 Running: $SCRIPT_PATH"
+  # Register backends (ignore errors if the command fails)
+  "$SCRIPT_PATH" "registerBackendLocationForGateway" 2>/dev/null || true"
+  echo "------------------------------------------"
+done
