@@ -40,4 +40,5 @@ JSON_FILES=("$JSON_DIR"/*.json)
 # Merge all JSON files using jq
 jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
 
-"${JETBRAINS_BIN_DIR}/backends/*/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true;
+# Register backends (ignore errors if the command fails)
+"${JETBRAINS_BIN_DIR}/backends/"*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true
