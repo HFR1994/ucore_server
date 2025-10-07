@@ -36,11 +36,11 @@ COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
 RUN chmod +x /tmp/jetbrains.sh \
     && /tmp/jetbrains.sh CL CL
 
-# Stage 6: JetBrains Gateway
-FROM base AS gateway
-COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
-RUN chmod +x /tmp/jetbrains.sh \
-    && /tmp/jetbrains.sh GW GW
+# # Stage 6: JetBrains Gateway
+# FROM base AS gateway
+# COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
+# RUN chmod +x /tmp/jetbrains.sh \
+#     && /tmp/jetbrains.sh GW GW
 
 # Stage 7: Final image
 FROM base AS final
@@ -50,7 +50,6 @@ COPY --from=webstorm /opt/jetbrains/backends /opt/jetbrains/backends
 COPY --from=idea /opt/jetbrains/backends /opt/jetbrains/backends
 COPY --from=pycharm /opt/jetbrains/backends /opt/jetbrains/backends
 COPY --from=clion /opt/jetbrains/backends /opt/jetbrains/backends
-COPY --from=gateway /opt/jetbrains/backends /opt/jetbrains/backends
 
 # Copy build scripts to final stage if needed
 COPY --from=ctx / /ctx
