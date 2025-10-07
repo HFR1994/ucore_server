@@ -41,4 +41,4 @@ JSON_FILES=("$JSON_DIR"/*.json)
 jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
 
 # Register backends (ignore errors if the command fails)
-"${JETBRAINS_BIN_DIR}/backends/"*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true
+"${JSON_DIR}/"/*/*/bin/remote-dev-server.sh registerBackendLocationForGateway 2>/dev/null || true
