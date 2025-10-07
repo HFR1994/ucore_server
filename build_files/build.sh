@@ -45,6 +45,6 @@ find "$JSON_DIR" -type f -path "*/bin/remote-dev-server.sh" | while read -r SCRI
   echo "📂 Found backend: $BACKEND_DIR"
   echo "🚀 Running: $SCRIPT_PATH"
   # Register backends (ignore errors if the command fails)
-  "$SCRIPT_PATH" "registerBackendLocationForGateway" 2>/dev/null || true"
+  "$SCRIPT_PATH" "registerBackendLocationForGateway" 2>/dev/null || true
   echo "------------------------------------------"
 done
