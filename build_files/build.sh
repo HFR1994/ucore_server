@@ -25,26 +25,26 @@ dnf5 install -y tmux jq cockpit wget curl gzip
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
-OUTPUT_FILE="products.json"
-JSON_DIR="/opt/jetbrains/backends"
+# OUTPUT_FILE="products.json"
+# JSON_DIR="/opt/jetbrains/backends"
 
-# Check if directory exists
-if [ ! -d "$JSON_DIR" ]; then
-    echo "Error: Directory '$JSON_DIR' does not exist"
-    exit 1
-fi
+# # Check if directory exists
+# if [ ! -d "$JSON_DIR" ]; then
+#     echo "Error: Directory '$JSON_DIR' does not exist"
+#     exit 1
+# fi
 
-# Find all JSON files in directory
-JSON_FILES=("$JSON_DIR"/*.json)
+# # Find all JSON files in directory
+# JSON_FILES=("$JSON_DIR"/*.json)
 
-# Merge all JSON files using jq
-jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
+# # Merge all JSON files using jq
+# jq -s 'add' "${JSON_FILES[@]}" | jq '.' > "$JSON_DIR/$OUTPUT_FILE"
 
-find "$JSON_DIR" -type f -path "*/bin/remote-dev-server.sh" | while read -r SCRIPT_PATH; do
-  BACKEND_DIR=$(dirname "$(dirname "$SCRIPT_PATH")")
-  echo "📂 Found backend: $BACKEND_DIR"
-  echo "🚀 Running: $SCRIPT_PATH"
-  # Register backends (ignore errors if the command fails)
-  "$SCRIPT_PATH" "registerBackendLocationForGateway" 2>/dev/null || true
-  echo "------------------------------------------"
-done
+# find "$JSON_DIR" -type f -path "*/bin/remote-dev-server.sh" | while read -r SCRIPT_PATH; do
+#   BACKEND_DIR=$(dirname "$(dirname "$SCRIPT_PATH")")
+#   echo "📂 Found backend: $BACKEND_DIR"
+#   echo "🚀 Running: $SCRIPT_PATH"
+#   # Register backends (ignore errors if the command fails)
+#   "$SCRIPT_PATH" "registerBackendLocationForGateway" 2>/dev/null || true
+#   echo "------------------------------------------"
+# done

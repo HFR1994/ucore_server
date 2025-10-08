@@ -13,28 +13,28 @@ RUN chmod +x /tmp/preset.sh \
 # RUN dnf install -y <your-packages> && dnf clean all
 
 # Stage 2: JetBrains WebStorm
-FROM base AS webstorm
-COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
-RUN chmod +x /tmp/jetbrains.sh \
-    && /tmp/jetbrains.sh WS WS
+# FROM base AS webstorm
+# COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
+# RUN chmod +x /tmp/jetbrains.sh \
+#     && /tmp/jetbrains.sh WS WS
 
-# Stage 3: JetBrains IntelliJ IDEA
-FROM base AS idea
-COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
-RUN chmod +x /tmp/jetbrains.sh \
-    && /tmp/jetbrains.sh IIU IU
+# # Stage 3: JetBrains IntelliJ IDEA
+# FROM base AS idea
+# COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
+# RUN chmod +x /tmp/jetbrains.sh \
+#     && /tmp/jetbrains.sh IIU IU
 
-# Stage 4: JetBrains PyCharm
-FROM base AS pycharm
-COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
-RUN chmod +x /tmp/jetbrains.sh \
-    && /tmp/jetbrains.sh PCP PY
+# # Stage 4: JetBrains PyCharm
+# FROM base AS pycharm
+# COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
+# RUN chmod +x /tmp/jetbrains.sh \
+#     && /tmp/jetbrains.sh PCP PY
 
 # Stage 5: JetBrains CLion
-FROM base AS clion
-COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
-RUN chmod +x /tmp/jetbrains.sh \
-    && /tmp/jetbrains.sh CL CL
+# FROM base AS clion
+# COPY --from=ctx /jetbrains.sh /tmp/jetbrains.sh
+# RUN chmod +x /tmp/jetbrains.sh \
+#     && /tmp/jetbrains.sh CL CL
 
 # # Stage 6: JetBrains Gateway
 # FROM base AS gateway
@@ -46,10 +46,10 @@ RUN chmod +x /tmp/jetbrains.sh \
 FROM base AS final
 
 # Copy installed IDEs from each stage
-COPY --from=webstorm /opt/jetbrains/backends /opt/jetbrains/backends
-COPY --from=idea /opt/jetbrains/backends /opt/jetbrains/backends
-COPY --from=pycharm /opt/jetbrains/backends /opt/jetbrains/backends
-COPY --from=clion /opt/jetbrains/backends /opt/jetbrains/backends
+# COPY --from=webstorm /opt/jetbrains/backends /opt/jetbrains/backends
+# COPY --from=idea /opt/jetbrains/backends /opt/jetbrains/backends
+# COPY --from=pycharm /opt/jetbrains/backends /opt/jetbrains/backends
+# COPY --from=clion /opt/jetbrains/backends /opt/jetbrains/backends
 
 # Copy build scripts to final stage if needed
 COPY --from=ctx / /ctx
