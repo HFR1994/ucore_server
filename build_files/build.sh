@@ -25,24 +25,36 @@ dnf5 install -y tmux jq cockpit wget curl gzip lvm2
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
-dracut --force --add-drivers "dm-mod" /boot/initramfs-$(uname -r).img $(uname -r)
-
-# Try common LV names
-ROOT_LV=$(ls /dev/mapper/ | grep -E 'ostree-root|root' | head -n1)
-
-if [ -z "$ROOT_LV" ]; then
-    echo "⚠️ No root LV found in /dev/mapper!"
-    exit 1
-fi
-
-ROOT_DEV="/dev/mapper/$ROOT_LV"
-echo "Using root device: $ROOT_DEVICE"
+install -Dm755 /ctx/detect-root.sh /usr/local/bin/detect-root.sh
 
 # ---------------------------
-# 3️⃣ Update GRUB
+# 3️⃣ Register the helper as a boot-time service
 # ---------------------------
-# Use device path instead of UUID for portability
-grub2-mkconfig -o /boot/grub2/grub.cfg
+cat <<'EOF' > /etc/systemd/system/detect-root.service
+[Unit]
+Description=Detect root LV at boot
+DefaultDependencies=no
+Before=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/detect-root.sh
+
+[Install]
+WantedBy=local-fs.target
+EOF
+
+systemctl enable detect-root.service
+
+# ---------------------------
+# 4️⃣ Create a marker file for post-deploy dracut update
+# ---------------------------
+# This way, the host can rebuild initramfs after deployment if needed
+echo "#!/bin/bash
+if [ -d /lib/modules/\$(uname -r) ]; then
+  dracut --force --add-drivers dm-mod /boot/initramfs-\$(uname -r).img \$(uname -r)
+fi" > /usr/local/sbin/update-initramfs-if-available
+chmod +x /usr/local/sbin/update-initramfs-if-available
 
 # OUTPUT_FILE="products.json"
 # JSON_DIR="/opt/jetbrains/backends"
