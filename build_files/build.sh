@@ -25,7 +25,9 @@ dnf5 install -y tmux jq cockpit wget curl gzip lvm2
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
 
-install -Dm755 /ctx/detect-root.sh /usr/local/bin/detect-root.sh
+mkdir -p /usr/local/bin
+cp -f /ctx/detect-root.sh /usr/local/bin/detect-root.sh
+chmod 755 /usr/local/bin/detect-root.sh
 
 # ---------------------------
 # 3️⃣ Register the helper as a boot-time service
