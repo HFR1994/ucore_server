@@ -10,7 +10,7 @@ set -ouex pipefail
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/39/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux jq cockpit wget curl gzip
+dnf5 install -y tmux jq cockpit wget curl gzip lvm2
 
 # Use a COPR Example:
 #
@@ -24,6 +24,25 @@ dnf5 install -y tmux jq cockpit wget curl gzip
 # Enable the user service
 systemctl enable podman.socket
 systemctl enable netavark-firewalld-reload.service
+
+dracut --force --add-drivers "dm-mod" /boot/initramfs-$(uname -r).img $(uname -r)
+
+# Try common LV names
+ROOT_LV=$(ls /dev/mapper/ | grep -E 'ostree-root|root' | head -n1)
+
+if [ -z "$ROOT_LV" ]; then
+    echo "⚠️ No root LV found in /dev/mapper!"
+    exit 1
+fi
+
+ROOT_DEV="/dev/mapper/$ROOT_LV"
+echo "Using root device: $ROOT_DEVICE"
+
+# ---------------------------
+# 3️⃣ Update GRUB
+# ---------------------------
+# Use device path instead of UUID for portability
+grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # OUTPUT_FILE="products.json"
 # JSON_DIR="/opt/jetbrains/backends"
