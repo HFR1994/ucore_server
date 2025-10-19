@@ -40,7 +40,7 @@ Before=local-fs.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/detect-root.sh
+ExecStart=/etc/local/bin/detect-root.sh
 
 [Install]
 WantedBy=local-fs.target
