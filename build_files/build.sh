@@ -52,11 +52,31 @@ systemctl enable detect-root.service
 # 4️⃣ Create a marker file for post-deploy dracut update
 # ---------------------------
 # This way, the host can rebuild initramfs after deployment if needed
-echo "#!/bin/bash
-if [ -d /lib/modules/\$(uname -r) ]; then
-  dracut --force --add-drivers dm-mod /boot/initramfs-\$(uname -r).img \$(uname -r)
-fi" > /usr/local/sbin/update-initramfs-if-available
-chmod +x /usr/local/sbin/update-initramfs-if-available
+mkdir -p /etc/local/sbin
+cat <<'EOF' > /etc/local/sbin/update-initramfs-if-available
+#!/bin/bash
+if [ -d /lib/modules/$(uname -r) ]; then
+  dracut --force --add-drivers dm-mod /boot/initramfs-$(uname -r).img $(uname -r)
+fi
+EOF
+chmod +x /etc/local/sbin/update-initramfs-if-available
+
+
+cat <<'EOF' > /etc/systemd/system/update-initramfs.service
+[Unit]
+Description=Update initramfs with dm-mod if kernel modules are present
+ConditionPathExists=/lib/modules/$(uname -r)
+After=detect-root.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/local/sbin/update-initramfs-if-available
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable update-initramfs.service
 
 # OUTPUT_FILE="products.json"
 # JSON_DIR="/opt/jetbrains/backends"
